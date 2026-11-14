@@ -39,5 +39,11 @@ public class Locacao {
         return cliente;
     }
     
-    
+    public Calendar calcularDataDevolucao(){
+        Calendar devolucao = (Calendar) data.clone();
+        devolucao.add(Calendar.DAY_OF_MONTH, dias);
+        
+        return devolucao;
+    }
+        
 }
