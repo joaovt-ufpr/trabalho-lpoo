@@ -9,6 +9,7 @@ package trabalhofinaljava;
  * @author renan
  */
 public class TelaLocacao extends javax.swing.JFrame {
+    private VeiculoLocacaoTableModel modeloTabela;
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(TelaLocacao.class.getName());
 
@@ -17,7 +18,45 @@ public class TelaLocacao extends javax.swing.JFrame {
      */
     public TelaLocacao() {
         initComponents();
+        comboCategoria.removeAllItems();
+        comboMarca.removeAllItems();
+        comboTipo.removeAllItems();
+        
+        comboCategoria.addItem("Todas");
+        for (Categoria categoria : Categoria.values()) {
+            comboCategoria.addItem(categoria.name());
+        }
+
+        comboMarca.addItem("Todas");
+        for (Marca marca : Marca.values()) {
+            comboMarca.addItem(marca.name());
+        }
+
+        comboTipo.addItem("Todos");
+        comboTipo.addItem("Automovel");
+        comboTipo.addItem("Motocicleta");
+        comboTipo.addItem("Van");
+
+        modeloTabela = new VeiculoLocacaoTableModel(
+            new java.util.ArrayList<>()
+        );
+
+        tabelaVeiculos.setModel(modeloTabela);
+
+        carregarVeiculosDisponiveis();
     }
+    
+    private void carregarVeiculosDisponiveis() {
+    java.util.List<VeiculoI> disponiveis = new java.util.ArrayList<>();
+
+    for (Veiculo veiculo : Repositorio.getVeiculos()) {
+        if (veiculo.getEstado() == Estado.DISPONIVEL) {
+            disponiveis.add(veiculo);
+        }
+    }
+
+    modeloTabela.atualizarLista(disponiveis);
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -30,6 +69,10 @@ public class TelaLocacao extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tabelaVeiculos = new javax.swing.JTable();
+        btnRealizarLocacao = new javax.swing.JButton();
+        jPanel3 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         comboCliente = new javax.swing.JComboBox<>();
@@ -44,9 +87,7 @@ public class TelaLocacao extends javax.swing.JFrame {
         jLabel7 = new javax.swing.JLabel();
         comboTipo = new javax.swing.JComboBox<>();
         btnBuscarVeiculos = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        btnRealizarLocacao = new javax.swing.JButton();
+        jPanel4 = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Locação de Veiculos");
@@ -74,6 +115,32 @@ public class TelaLocacao extends javax.swing.JFrame {
                 .addContainerGap(25, Short.MAX_VALUE))
         );
 
+        tabelaVeiculos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Placa", "Marca", "Modelo", "Ano", "Valor da Diária"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        tabelaVeiculos.setColumnSelectionAllowed(true);
+        jScrollPane1.setViewportView(tabelaVeiculos);
+        tabelaVeiculos.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        btnRealizarLocacao.setText("Realizar Locação");
+        btnRealizarLocacao.addActionListener(this::btnRealizarLocacaoActionPerformed);
+
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Dados da Locação"));
 
         jLabel2.setText("Cliente:");
@@ -96,6 +163,7 @@ public class TelaLocacao extends javax.swing.JFrame {
         jLabel7.setText("Tipo: ");
 
         btnBuscarVeiculos.setText("Buscar veículos");
+        btnBuscarVeiculos.addActionListener(this::btnBuscarVeiculosActionPerformed);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
         jPanel2.setLayout(jPanel2Layout);
@@ -129,7 +197,7 @@ public class TelaLocacao extends javax.swing.JFrame {
                         .addComponent(btnBuscarVeiculos))
                     .addComponent(campoDataLocacao, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(spinnerDias, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(247, Short.MAX_VALUE))
+                .addContainerGap(229, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -156,30 +224,33 @@ public class TelaLocacao extends javax.swing.JFrame {
                 .addContainerGap(21, Short.MAX_VALUE))
         );
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null},
-                {null, null, null, null, null}
-            },
-            new String [] {
-                "Placa", "Marca", "Modelo", "Ano", "Valor da Diária"
-            }
-        ) {
-            boolean[] canEdit = new boolean [] {
-                false, false, false, false, false
-            };
+        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
+        jPanel3.setLayout(jPanel3Layout);
+        jPanel3Layout.setHorizontalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel3Layout.setVerticalGroup(
+            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
+                .addContainerGap(14, Short.MAX_VALUE)
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap())
+        );
 
-            public boolean isCellEditable(int rowIndex, int columnIndex) {
-                return canEdit [columnIndex];
-            }
-        });
-        jTable1.setColumnSelectionAllowed(true);
-        jScrollPane1.setViewportView(jTable1);
-        jTable1.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-
-        btnRealizarLocacao.setText("Realizar Locação");
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 169, Short.MAX_VALUE)
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -188,29 +259,75 @@ public class TelaLocacao extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1)
+                    .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1)
+                            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                         .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnRealizarLocacao)))
+                        .addComponent(btnRealizarLocacao)
+                        .addGap(14, 14, 14)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 298, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 336, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
                 .addComponent(btnRealizarLocacao)
-                .addContainerGap(14, Short.MAX_VALUE))
+                .addGap(174, 174, 174))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnRealizarLocacaoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRealizarLocacaoActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_btnRealizarLocacaoActionPerformed
+
+    private void btnBuscarVeiculosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarVeiculosActionPerformed
+        java.util.List<VeiculoI> filtrados = new java.util.ArrayList<>();
+
+        String categoriaSelecionada = (String) comboCategoria.getSelectedItem();
+        String marcaSelecionada = (String) comboMarca.getSelectedItem();
+        String tipoSelecionado = (String) comboTipo.getSelectedItem();
+
+        for (Veiculo veiculo : Repositorio.getVeiculos()) {
+
+            if (veiculo.getEstado() != Estado.DISPONIVEL) {
+                continue;
+            }
+
+            boolean categoriaValida =
+                    categoriaSelecionada.equals("Todas")
+                    || veiculo.getCategoria().name().equals(categoriaSelecionada);
+
+            boolean marcaValida =
+                    marcaSelecionada.equals("Todas")
+                    || veiculo.getMarca().name().equals(marcaSelecionada);
+
+            boolean tipoValido =
+                    tipoSelecionado.equals("Todos")
+                    || (tipoSelecionado.equals("Automovel") && veiculo instanceof Automovel)
+                    || (tipoSelecionado.equals("Motocicleta") && veiculo instanceof Motocicleta)
+                    || (tipoSelecionado.equals("Van") && veiculo instanceof Van);
+
+            if (categoriaValida && marcaValida && tipoValido) {
+                filtrados.add(veiculo);
+            }
+        }
+
+        modeloTabela.atualizarLista(filtrados);
+    }//GEN-LAST:event_btnBuscarVeiculosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -254,8 +371,10 @@ public class TelaLocacao extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
     private javax.swing.JSpinner spinnerDias;
+    private javax.swing.JTable tabelaVeiculos;
     // End of variables declaration//GEN-END:variables
 }

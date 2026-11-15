@@ -17,12 +17,26 @@ public class VeiculoLocacaoTableModel extends AbstractTableModel{
  
     private List<VeiculoI> veiculos;
     
+    public VeiculoLocacaoTableModel(List<VeiculoI> veiculos) {
+        this.veiculos = veiculos;
+    }
+    
     @Override
     public int getRowCount() {
        if(veiculos == null) {
            return 0;
        }
        return veiculos.size();
+    }
+    
+    public void atualizarLista(List<VeiculoI> veiculos) {
+        this.veiculos = veiculos;
+        fireTableDataChanged();
+    }
+    
+    @Override
+    public String getColumnName(int column) {
+        return colunas[column];
     }
 
     @Override
@@ -32,8 +46,36 @@ public class VeiculoLocacaoTableModel extends AbstractTableModel{
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        //pendente joao fazer a parte dele para implementar esse metodo
-        return veiculo;
+
+        VeiculoI veiculo = veiculos.get(rowIndex);
+
+        switch (columnIndex) {
+            case 0:
+                return veiculo.getPlaca();
+
+            case 1:
+                return veiculo.getMarca();
+
+    
+            case 2:
+                if (veiculo instanceof Automovel) {
+                    return ((Automovel) veiculo).getModelo();
+                } else if (veiculo instanceof Motocicleta) {
+                    return ((Motocicleta) veiculo).getModelo();
+                } else if (veiculo instanceof Van) {
+                    return ((Van) veiculo).getModelo();
+                }
+                return "-";
+
+            case 3:
+                return veiculo.getAno();
+
+            case 4:
+                return veiculo.getValorDiariaLocacao();
+
+            default:
+                return null;
+        }
     }
     
 }
