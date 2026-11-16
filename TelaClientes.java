@@ -37,8 +37,11 @@ public class TelaClientes extends JFrame implements ActionListener {
         modelo = new ClienteTableModel(Repositorio.getClientes());
         tabela = new JTable(modelo);
 
-        // Painel com os campos do formulario
-        JPanel painelCampos = new JPanel(new GridLayout(5, 2, 5, 5));
+        // Painel com os campos do formulario, com borda e espacamento interno
+        JPanel painelCampos = new JPanel(new GridLayout(5, 2, 8, 8));
+        painelCampos.setBorder(javax.swing.BorderFactory.createCompoundBorder(
+                javax.swing.BorderFactory.createTitledBorder("Dados do Cliente"),
+                javax.swing.BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         painelCampos.add(new JLabel("Nome:"));
         painelCampos.add(txtNome);
         painelCampos.add(new JLabel("Sobrenome:"));
@@ -50,20 +53,34 @@ public class TelaClientes extends JFrame implements ActionListener {
         painelCampos.add(new JLabel("Endereço:"));
         painelCampos.add(txtEndereco);
 
-        // Painel com os botoes
-        JPanel painelBotoes = new JPanel();
-        painelBotoes.add(btnIncluir);
-        painelBotoes.add(btnAtualizar);
-        painelBotoes.add(btnExcluir);
-        painelBotoes.add(btnLimpar);
+        // Ações ficam à direita e o botão Voltar à esquerda.
+        JPanel painelAcoes = new JPanel();
+        painelAcoes.add(btnIncluir);
+        painelAcoes.add(btnAtualizar);
+        painelAcoes.add(btnExcluir);
+        painelAcoes.add(btnLimpar);
+
+        JButton btnVoltar = new JButton("← Voltar");
+        btnVoltar.setFont(javax.swing.UIManager.getFont("Button.font"));
+        btnVoltar.setPreferredSize(new java.awt.Dimension(100, 32));
+        btnVoltar.setMinimumSize(new java.awt.Dimension(100, 32));
+        btnVoltar.setMaximumSize(new java.awt.Dimension(100, 32));
+        btnVoltar.setMargin(new java.awt.Insets(5, 10, 5, 10));
+
+        btnVoltar.addActionListener(e -> dispose());
+        JPanel painelRodape = new JPanel(new BorderLayout());
+        painelRodape.add(btnVoltar, BorderLayout.WEST);
+        painelRodape.add(painelAcoes, BorderLayout.EAST);
 
         JPanel painelTopo = new JPanel(new BorderLayout());
         painelTopo.add(painelCampos, BorderLayout.CENTER);
-        painelTopo.add(painelBotoes, BorderLayout.SOUTH);
 
         setLayout(new BorderLayout(10, 10));
         add(painelTopo, BorderLayout.NORTH);
-        add(new JScrollPane(tabela), BorderLayout.CENTER);
+        JScrollPane scrollTabela = new JScrollPane(tabela);
+        scrollTabela.setBorder(javax.swing.BorderFactory.createTitledBorder("Clientes Cadastrados"));
+        add(scrollTabela, BorderLayout.CENTER);
+        add(painelRodape, BorderLayout.SOUTH);
 
         // Eventos
         btnIncluir.addActionListener(this);
@@ -79,7 +96,7 @@ public class TelaClientes extends JFrame implements ActionListener {
             }
         });
 
-        setSize(700, 500);
+        setSize(820, 580);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     }
