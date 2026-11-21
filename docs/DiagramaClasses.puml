@@ -1,0 +1,193 @@
+@startuml
+title Sistema de Locação de Veículos - Diagrama de Classes
+
+skinparam nodesep 35
+skinparam ranksep 55
+
+package trabalhofinaljava {
+
+    class Repositorio {
+        {static} -clientes : List<Cliente>
+        {static} -veiculos : List<Veiculo>
+        {static} +adicionarCliente(cliente : Cliente) : void
+        {static} +removerCliente(cliente : Cliente) : void
+        {static} +getClientes() : List<Cliente>
+        {static} +buscarClientePorCpf(cpf : String) : Cliente
+        {static} +cpfJaCadastrado(cpf : String) : boolean
+        {static} +clientePossuiLocacaoAtiva(cliente : Cliente) : boolean
+        {static} +adicionarVeiculo(veiculo : Veiculo) : void
+        {static} +getVeiculos() : List<Veiculo>
+    }
+
+    interface VeiculoI {
+        +locar(dias : int, data : Calendar, cliente : Cliente) : void
+        +vender() : void
+        +devolver() : void
+        +getEstado() : Estado
+        +getMarca() : Marca
+        +getCategoria() : Categoria
+        +getLocacao() : Locacao
+        +getPlaca() : String
+        +getAno() : int
+        +getValorParaVenda() : double
+        +getValorDiariaLocacao() : double
+    }
+
+    abstract class Veiculo {
+        -marca : Marca
+        -estado : Estado
+        -locacao : Locacao
+        -categoria : Categoria
+        -valorDeCompra : double
+        -placa : String
+        -ano : int
+        +Veiculo(marca, estado, locacao, categoria, valorDeCompra, placa, ano)
+        +locar(dias : int, data : Calendar, cliente : Cliente) : void
+        +vender() : void
+        +devolver() : void
+        +getEstado() : Estado
+        +getMarca() : Marca
+        +getCategoria() : Categoria
+        +getLocacao() : Locacao
+        +getPlaca() : String
+        +getAno() : int
+        +getValorParaVenda() : double
+        {abstract} +getValorDiariaLocacao() : double
+    }
+
+    class Automovel {
+        -modelo : ModeloAutomovel
+        +Automovel(marca, estado, locacao, categoria, valorDeCompra, placa, ano, modelo)
+        +getModelo() : ModeloAutomovel
+        +getValorDiariaLocacao() : double
+    }
+
+    class Motocicleta {
+        -modelo : ModeloMotocicleta
+        +Motocicleta(marca, estado, locacao, categoria, valorDeCompra, placa, ano, modelo)
+        +getModelo() : ModeloMotocicleta
+        +getValorDiariaLocacao() : double
+    }
+
+    class Van {
+        -modelo : ModeloVan
+        +Van(marca, estado, locacao, categoria, valorDeCompra, placa, ano, modelo)
+        +getModelo() : ModeloVan
+        +getValorDiariaLocacao() : double
+    }
+
+    class Locacao {
+        -dias : int
+        -valor : double
+        -data : Calendar
+        -cliente : Cliente
+        +Locacao(dias, valor, data, cliente)
+        +getDias() : int
+        +getValor() : double
+        +getData() : Calendar
+        +getCliente() : Cliente
+        +calcularDataDevolucao() : Calendar
+    }
+
+    class Cliente {
+        -nome : String
+        -sobrenome : String
+        -rg : String
+        -cpf : String
+        -endereco : String
+        +Cliente(nome, sobrenome, rg, cpf, endereco)
+        +getNome() : String
+        +setNome(nome : String) : void
+        +getSobrenome() : String
+        +setSobrenome(sobrenome : String) : void
+        +getRg() : String
+        +setRg(rg : String) : void
+        +getCpf() : String
+        +setCpf(cpf : String) : void
+        +getEndereco() : String
+        +setEndereco(endereco : String) : void
+        +toString() : String
+    }
+
+    enum Estado {
+        NOVO
+        LOCADO
+        DISPONIVEL
+        VENDIDO
+    }
+
+    enum Categoria {
+        POPULAR
+        INTERMEDIARIO
+        LUXO
+    }
+
+    enum Marca {
+        VW
+        GM
+        FIAT
+        FORD
+        HONDA
+        YAMAHA
+        MERCEDES
+        RENAULT
+        TOYOTA
+    }
+
+    enum ModeloAutomovel {
+        GOL
+        CELTA
+        PALIO
+        ONIX
+        KA
+        CIVIC
+        COROLLA
+    }
+
+    enum ModeloMotocicleta {
+        CG125
+        CBR500
+        BIZ125
+        FAZER250
+    }
+
+    enum ModeloVan {
+        KOMBI
+        SPRINTER
+        DUCATO
+        MASTER
+    }
+}
+
+' ---- Relações ----
+VeiculoI <|.. Veiculo
+Veiculo <|-- Automovel
+Veiculo <|-- Motocicleta
+Veiculo <|-- Van
+
+Repositorio o-- "*" Veiculo : veiculos
+Repositorio o-- "*" Cliente : clientes
+
+Veiculo --> "0..1" Locacao : locacao
+Veiculo -right-> "1" Estado
+Veiculo -right-> "1" Categoria
+Veiculo -right-> "1" Marca
+Locacao --> "1" Cliente : cliente
+
+Automovel --> "1" ModeloAutomovel
+Motocicleta --> "1" ModeloMotocicleta
+Van --> "1" ModeloVan
+
+' ---- Dicas de posicionamento (links invisíveis) ----
+Repositorio -[hidden]right- VeiculoI
+
+' enums Estado, Categoria e Marca ao lado de Veiculo, lado a lado
+Estado -[hidden]right- Categoria
+Categoria -[hidden]right- Marca
+
+' linha das subclasses
+Locacao -[hidden]right- Automovel
+Automovel -[hidden]right- Motocicleta
+Motocicleta -[hidden]right- Van
+
+@enduml
